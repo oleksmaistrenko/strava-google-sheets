@@ -46,15 +46,32 @@ The Google sheet has several sheets to organize the data:
 
 - **stats for month**: this sheet is created using a pivot table for athletes (_Rider_ from the **raw data**) vs kilometers (SUM of _Distance_ from the **raw data**) and elevation gain meters (SUM of _Elevation_ from the **raw data**).
 
-- **stats using calculcations**: these are two sheets created using calculations (one for the distance and a second for the elevation).
+- **stats using calculcations**: these are two sheets created using calculations (one for the distance and a second for the elevation). Every sheet consists of two parts. The first part is a table showing all activities in the current month. The second part is a table summing up the results of the activities.
 
-  - the first column gets the dates of all activities `=SORT(FILTER('raw data'!B:C, 'raw data'!B:B > date(2020,3,31),NOT(EQ('raw data'!B:B,"Date"))))`
+  |     | **A**        | **B** | **C**       |   | **AA**         |
+  |-----| ------------ | ----- | ----------- |---| -------------- |
+  |**1**| Date         | Time  | *Formula 2* |   | `=D2`          |
+  |**2**| *Formula 1*  |       | *Formula 3* |   | `=SUM(D$2:D2)` |
 
-  - the first row get the list of all _Rider_ `=TRANSPOSE(UNIQUE('raw data'!A:A))`
+  - The first column gets the dates of all activities `=SORT(FILTER('raw data'!B:C, 'raw data'!B:B > date(2020,3,31),NOT(EQ('raw data'!B:B,"Date"))))` (*Formula 1*).
 
-  - the data for this table is filled using the query `=IFERROR(QUERY(FILTER('raw data'!$A:$D,'raw data'!$A:$A=D$1,'raw data'!$B:$B=$A2,'raw data'!$C:$C=$B2),"Select Col4"),0)`
+  - The first row get the list of all _Rider_ `=TRANSPOSE(UNIQUE('raw data'!A:A))` (*Formula 2*).
 
-- **graphs**: graphs showing the results of athlete progress.
+  - The data for this table is filled using the query `=IFERROR(QUERY(FILTER('raw data'!$A:$D,'raw data'!$A:$A=D$1,'raw data'!$B:$B=$A2,'raw data'!$C:$C=$B2),"Select Col4"),0)` (*Formula 3*).
+
+- **graphs**: graphs showing the results of athlete progress. I use four graphs:
+  
+  - for _distance_: (1) total for this months using Column chart and (2) gaining the distance using Line chart.
+
+  - for _elevation_.: (1) total for this months using Column chart and (2) gaining the distance using Line chart.
+
+The example sheet for the **stats using calculcations** (for _Distance_) will look as follows.
+
+|     | **A**         | **B**   | **C** | **D** | **E** | **F** | **G** | **H** |
+|-----| ------------- | ------- | ----- | ----- | ----- |-------| ----- | ----- |
+|**1**| Date          | Time    | Rider | Alice | Bob   |       | Alice | Bob   |
+|**2**| April 2, 2020 | 6:16 PM |       |     0 | 15.37 |       |     0 | 15.37 |
+|**3**| April 4, 2020 | 3:56 PM |       | 37.19 | 23.90 |       | 37.19 | 39.27 |
 
 ### AWS Lambda setup
 
