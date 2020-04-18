@@ -80,3 +80,5 @@ The graph example is shown below.
 ### AWS Lambda setup
 
 For the AWS Lambda setup, it is required to create a layer containing [lxml](https://lxml.de) library using the ideas from the following resources: [first](https://stackoverflow.com/questions/56818579/unable-to-import-lxml-etree-on-aws-lambda) and [second](https://gist.github.com/allen-munsch/ad8faf9c04b72aa8d0808fa8953bc639).
+
+Acces to the Lambda function is organized via AWS API Gateway. In API Gateway, the throttling is limited.
