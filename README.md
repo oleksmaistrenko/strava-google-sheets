@@ -38,15 +38,23 @@ All right, the solution is to build a web-scrapper that would get all the necess
 
 The data visualization can be done using Google Sheets. The data is written to the Google Sheet by a Google Apps Script. The [script](strava-fetch.gs) calls HTTPS endpoint on AWS and adds the data to the Google Sheet. The script is triggered by a button placed on a sheet.
 
+### Google sheet example
+
 The Google sheet has several sheets to organize the data:
 
-- ``raw data``: this sheet contains data obtained from Strava
+- **raw data**: this sheet contains data obtained from Strava. This is basically a table with a header "_Rider_, _Date_, _Time_, _Distance_, _Elevation_". The new records are added to the end of this sheet.
 
-- ``stats for month``: this sheet is created using a pivot table for athletes vs kilometers and elevation gain meter
+- **stats for month**: this sheet is created using a pivot table for athletes (_Rider_ from the **raw data**) vs kilometers (SUM of _Distance_ from the **raw data**) and elevation gain meters (SUM of _Elevation_ from the **raw data**).
 
-- ``stats using calculcations``: these sheets are created using calculations
+- **stats using calculcations**: these are two sheets created using calculations (one for the distance and a second for the elevation).
 
-- ``graphs``: graphs showing the results of athlete progress
+  - the first column gets the dates of all activities `=SORT(FILTER('raw data'!B:C, 'raw data'!B:B > date(2020,3,31),NOT(EQ('raw data'!B:B,"Date"))))`
+
+  - the first row get the list of all _Rider_ `=TRANSPOSE(UNIQUE('raw data'!A:A))`
+
+  - the data for this table is filled using the query `=IFERROR(QUERY(FILTER('raw data'!$A:$D,'raw data'!$A:$A=D$1,'raw data'!$B:$B=$A2,'raw data'!$C:$C=$B2),"Select Col4"),0)`
+
+- **graphs**: graphs showing the results of athlete progress.
 
 ### AWS Lambda setup
 
