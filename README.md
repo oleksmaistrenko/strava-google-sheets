@@ -67,11 +67,15 @@ The Google sheet has several sheets to organize the data:
 
 The example sheet for the **stats using calculcations** (for _Distance_) will look as follows.
 
-|     | **A**         | **B**   | **C** | **D** | **E** | **F** | **G** | **H** |
-|-----| ------------- | ------- | ----- | ----- | ----- |-------| ----- | ----- |
-|**1**| Date          | Time    | Rider | Alice | Bob   |       | Alice | Bob   |
-|**2**| April 2, 2020 | 6:16 PM |       |     0 | 15.37 |       |     0 | 15.37 |
-|**3**| April 4, 2020 | 3:56 PM |       | 37.19 | 23.90 |       | 37.19 | 39.27 |
+|     | **A**         | **B**   | **C** | **D** | **E** |   | **AA** | **AB** |
+|-----| ------------- | ------- | ----- | ----- | ----- |---| ------ | ------ |
+|**1**| Date          | Time    | Rider | Alice | Bob   |   | Alice  | Bob    |
+|**2**| April 2, 2020 | 6:16 PM |       |     0 | 15.37 |   |      0 |  15.37 |
+|**3**| April 4, 2020 | 3:56 PM |       | 37.19 | 23.90 |   |  37.19 |  39.27 |
+
+The graph example is shown below.
+
+![graph-example](graphs-example.png)
 
 ### AWS Lambda setup
 
