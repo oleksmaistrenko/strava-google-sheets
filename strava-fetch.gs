@@ -1,3 +1,4 @@
+// helper functino to work with the time zones
 function getDateFromCell(cellData){
   try {
     var timeZone = cellData.getTimezoneOffset()/-60;
@@ -8,6 +9,7 @@ function getDateFromCell(cellData){
   }
 }
 
+// this is the function called from the sheet
 function getDataFromLambda() {
   // get data from strava
   var optGet ={
@@ -42,17 +44,3 @@ function getDataFromLambda() {
     sheet.appendRow(r);
   }
 }
-    
-// this is a testing function
-function testDate() {
-   var sheet = SpreadsheetApp.getActiveSheet();
-   var data = sheet.getDataRange().getValues();
-  
-  for (var i = 1; i < data.length; i++) {
-    Logger.log(data[i][1]);
-    Logger.log(getDateFromCell(data[i][1]) + " " + Utilities.formatDate(new Date(data[i][2]), "GMT+2:03", "h:mm a"));
-  }
-    
-}
-
-
