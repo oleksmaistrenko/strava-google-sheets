@@ -44,6 +44,12 @@ The original idea was to put all the code on Google Apps Script, but the HTML co
 
 ---
 
+### AWS Lambda setup
+
+The Lambda function is access via AWS API Gateway. In API Gateway, the throttling is limited.
+
+For the AWS Lambda setup, it is required to create a layer containing [lxml](https://lxml.de) library using the ideas from the following resources: [first](https://stackoverflow.com/questions/56818579/unable-to-import-lxml-etree-on-aws-lambda) and [second](https://gist.github.com/allen-munsch/ad8faf9c04b72aa8d0808fa8953bc639). The current code also uses a deprecated version of the requests from [boto3](https://github.com/boto/boto3).
+
 ### Google sheet example
 
 The Google sheet has several sheets to organize the data:
@@ -82,9 +88,3 @@ The example sheet for the **stats using calculations** (for _Distance_) will loo
 The graph example is shown below.
 
 ![graph-example](graphs-example.png)
-
-### AWS Lambda setup
-
-For the AWS Lambda setup, it is required to create a layer containing [lxml](https://lxml.de) library using the ideas from the following resources: [first](https://stackoverflow.com/questions/56818579/unable-to-import-lxml-etree-on-aws-lambda) and [second](https://gist.github.com/allen-munsch/ad8faf9c04b72aa8d0808fa8953bc639).
-
-Access to the Lambda function is organized via AWS API Gateway. In API Gateway, the throttling is limited.
