@@ -36,17 +36,23 @@ The data is not very helpful. It doesn't contain the date/time of the activity. 
 
 All right, the solution is to build a web-scrapper that would get all the necessary data from the web-page. The [web-scrapper](lambda_function.py) is implemented in python. And it is executed as an AWS Lambda function.
 
-The data visualization can be done using Google Sheets. The data is written to the Google Sheet by a Google Apps Script. The [script](strava-fetch.gs) calls HTTPS endpoint on AWS and adds the data to the Google Sheet. The script is triggered by a button placed on a sheet.
+Data visualization can be done using Google Sheets. The data is written to the Google Sheet by a Google Apps Script. The [script](strava-fetch.gs) calls HTTPS endpoint on AWS and adds the data to the Google Sheet. The script is triggered by a button placed on a sheet.
+
+---
+
+The original idea was to put all the code on Google Apps Script, but the HTML code that is fetched from the Strava web-site cannot be parsed in Google Apps Script.
+
+---
 
 ### Google sheet example
 
 The Google sheet has several sheets to organize the data:
 
-- **raw data**: this sheet contains data obtained from Strava. This is basically a table with a header "_Rider_, _Date_, _Time_, _Distance_, _Elevation_". The new records are added to the end of this sheet.
+- **raw data**: this sheet contains data obtained from Strava. This is a table with a header "_Rider_, _Date_, _Time_, _Distance_, _Elevation_". The new records are added to the end of this sheet.
 
 - **stats for month**: this sheet is created using a pivot table for athletes (_Rider_ from the **raw data**) vs kilometers (SUM of _Distance_ from the **raw data**) and elevation gain meters (SUM of _Elevation_ from the **raw data**).
 
-- **stats using calculcations**: these are two sheets created using calculations (one for the distance and a second for the elevation). Every sheet consists of two parts. The first part is a table showing all activities in the current month. The second part is a table summing up the results of the activities.
+- **stats using calculations**: these are two sheets created using calculations (one for the distance and a second for the elevation). Every sheet consists of two parts. The first part is a table showing all activities in the current month. The second part is a table summing up the results of the activities.
 
   |     | **A**        | **B** | **C**       |   | **AA**         |
   |-----| ------------ | ----- | ----------- |---| -------------- |
@@ -55,17 +61,17 @@ The Google sheet has several sheets to organize the data:
 
   - The first column gets the dates of all activities `=SORT(FILTER('raw data'!B:C, 'raw data'!B:B > date(2020,3,31),NOT(EQ('raw data'!B:B,"Date"))))` (*Formula 1*).
 
-  - The first row get the list of all _Rider_ `=TRANSPOSE(UNIQUE('raw data'!A:A))` (*Formula 2*).
+  - The first row gets the list of all _Rider_ `=TRANSPOSE(UNIQUE('raw data'!A:A))` (*Formula 2*).
 
   - The data for this table is filled using the query `=IFERROR(QUERY(FILTER('raw data'!$A:$D,'raw data'!$A:$A=D$1,'raw data'!$B:$B=$A2,'raw data'!$C:$C=$B2),"Select Col4"),0)` (*Formula 3*).
 
 - **graphs**: graphs showing the results of athlete progress. I use four graphs:
   
-  - for _distance_: (1) total for this months using Column chart and (2) gaining the distance using Line chart.
+  - for _distance_: (1) total for this month using the Column chart and (2) gaining the distance using Line chart.
 
-  - for _elevation_.: (1) total for this months using Column chart and (2) gaining the distance using Line chart.
+  - for _elevation_.: (1) total for this month using the Column chart and (2) gaining the distance using Line chart.
 
-The example sheet for the **stats using calculcations** (for _Distance_) will look as follows.
+The example sheet for the **stats using calculations** (for _Distance_) will look as follows.
 
 |     | **A**         | **B**   | **C** | **D** | **E** |   | **AA** | **AB** |
 |-----| ------------- | ------- | ----- | ----- | ----- |---| ------ | ------ |
@@ -81,4 +87,4 @@ The graph example is shown below.
 
 For the AWS Lambda setup, it is required to create a layer containing [lxml](https://lxml.de) library using the ideas from the following resources: [first](https://stackoverflow.com/questions/56818579/unable-to-import-lxml-etree-on-aws-lambda) and [second](https://gist.github.com/allen-munsch/ad8faf9c04b72aa8d0808fa8953bc639).
 
-Acces to the Lambda function is organized via AWS API Gateway. In API Gateway, the throttling is limited.
+Access to the Lambda function is organized via AWS API Gateway. In API Gateway, the throttling is limited.
