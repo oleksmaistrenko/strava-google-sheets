@@ -10,8 +10,6 @@ def parse_activity_html(activity_html):
     tree = html.fromstring(activity_html.text)
 
     last_timestamp = ''
-    last_month_name = ''
-    
     records = []
 
     for activity in tree.xpath("//div[@class='activity entity-details feed-entry']"):
@@ -19,7 +17,7 @@ def parse_activity_html(activity_html):
         activity_athlete = activity.xpath(".//a[@class='entry-athlete']")[0].text.strip()
         activity_date = activity.xpath(".//div[@class='entry-head']/time")[0].text.strip()
         activity_date_day, activity_date_time, *_ = activity_date.split(" at ")
-        # correct the dates
+        # correct the dates from human readable to date time
         if activity_date_day == 'Today':
             activity_date_day = datetime.date.today().strftime('%B %-d, %Y')
         elif activity_date_day == 'Yesterday':
@@ -29,15 +27,16 @@ def parse_activity_html(activity_html):
             activity_elevation_gain = activity.xpath(".//li[@title='Elev Gain']")[0].text.strip().replace(',', '')
         except IndexError:
             activity_elevation_gain = ''
-        print(f'"{activity_athlete}","{activity_date_day}","{activity_date_time}","{activity_distance}","{activity_elevation_gain}"')
         records.append((activity_athlete, activity_date_day, activity_date_time, activity_distance, activity_elevation_gain))
         last_timestamp = activity_timestamp
-        last_month_name = activity_date_day.split(" ")[0]
 
-    return last_timestamp, last_month_name, records
+    return last_timestamp, records
 
 
 def lambda_handler(event, context):
+    '''
+    Lambda handler
+    '''
     # get the club id
     club_id = os.environ['CLUB_ID']
     
@@ -57,12 +56,12 @@ def lambda_handler(event, context):
         headers = dict(referer=login_url)
     )
 
-    # get the current month
+    # resulting activity records from strava
     records = []
     
     # get the recent activity
     club_recent_activity = session_requests.get(f'https://www.strava.com/clubs/{club_id}/recent_activity')
-    last_timestamp, last_month_name, temp_records = parse_activity_html(club_recent_activity)
+    last_timestamp, temp_records = parse_activity_html(club_recent_activity)
     records += temp_records
 
     # load more until we can
@@ -70,10 +69,10 @@ def lambda_handler(event, context):
         club_recent_activity_continued = session_requests.get(f"https://www.strava.com/clubs/{club_id}/feed",
             params = dict(feed_type='club', before=last_timestamp, cursor=last_timestamp + ".0")
         )
-        last_timestamp, last_month_name, temp_records = parse_activity_html(club_recent_activity_continued)
+        last_timestamp, temp_records = parse_activity_html(club_recent_activity_continued)
         records += temp_records
 
+    # close the session
     session_requests.close()
 
     return {'content' : records}
-    
