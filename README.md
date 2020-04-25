@@ -48,7 +48,59 @@ The original idea was to put all the code on Google Apps Script, but the HTML co
 
 The Lambda function is access via AWS API Gateway. In API Gateway, the throttling is limited.
 
-For the AWS Lambda setup, it is required to create a layer containing [lxml](https://lxml.de) library using the ideas from the following resources: [first](https://stackoverflow.com/questions/56818579/unable-to-import-lxml-etree-on-aws-lambda) and [second](https://gist.github.com/allen-munsch/ad8faf9c04b72aa8d0808fa8953bc639). The current code also uses a deprecated version of the requests from [boto3](https://github.com/boto/boto3).
+For the AWS Lambda setup, it is required to create a layer containing [lxml](https://lxml.de) library using the ideas from the following resources: [first](https://stackoverflow.com/questions/56818579/unable-to-import-lxml-etree-on-aws-lambda) and [second](https://gist.github.com/allen-munsch/ad8faf9c04b72aa8d0808fa8953bc639).
+
+First, spin off a local container of amazon linux.
+
+```bash
+docker run -it amazonlinux:2018.03 bash
+```
+
+Install via yum all dependencies when running docker and having already created your virtual environment.
+
+```bash
+yum update -y
+yum install -y \
+  python36 \
+  python36-devel \
+  python36-virtualenv \
+  python34-setuptools \
+  gcc \
+  gcc-c++ \
+  findutils \
+  rsync \
+  Cython \
+  findutils \
+  which \
+  gzip \
+  tar \
+  man-pages \
+  man \
+  wget \
+  make \
+  zip
+
+# for lxml install two additional libs.
+yum install -y \
+  libxml2 \
+  libxslt
+
+# install lxml in virtualenv.
+virtualenv v-env
+source v-env/bin/activate
+pip install lxml
+deactivate
+
+# copy the libs to a zip file
+mkdir python
+cp -a ./v-env/lib/python3.6/site-packages/. ./python
+cp -a ./v-env/lib64/python3.6/site-packages/. ./python
+zip -r9 ../layer36.zip python
+```
+
+Creata layer using the resulting zip.
+
+The current code also uses a deprecated version of the requests from [boto3](https://github.com/boto/boto3).
 
 ### Google sheet example
 
