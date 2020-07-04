@@ -106,4 +106,4 @@ def lambda_handler(event, context):
     # close the session
     session_requests.close()
 
-    return {'content' : records}
+    return {'content' : list(records)}
